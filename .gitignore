@@ -1,0 +1,11 @@
+*.egg-info
+.tox
+.idea
+__pycache__
+.coverage
+.coverage.*
+htmlcov
+*.pyc
+venv
+dist
+dataset/*.csv
