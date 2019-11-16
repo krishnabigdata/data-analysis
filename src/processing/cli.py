@@ -14,7 +14,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--year',
                         type=int,
                         default=2019,
-                        required=True,
                         dest='year',
                         help='year of data to load')
 
@@ -22,7 +21,6 @@ def parse_args() -> argparse.Namespace:
                         type=int,
                         default=1,
                         choices=[1,2,3,4,5,6],
-                        required=True,
                         dest='month',
                         help='month of data to load')
 
@@ -30,7 +28,6 @@ def parse_args() -> argparse.Namespace:
                         type=str,
                         default='yellow',
                         choices=['yellow'],
-                        required=True,
                         dest='color',
                         help='color of data to load')
 
@@ -74,6 +71,7 @@ def main() -> ExitStatus:
         transform.download_data()
         transform.load_data()
         transform.avg_trip_distance()
+        transform.calc_avg_trip_distance_local()
         transform.rolling_avg_trip_distance()
 
     return ExitStatus.success

@@ -1,11 +1,14 @@
 ## Yellow Taxi Data Processing and Analysis
 
-Analyzing Yellow Taxi Data. This project can executed using Docker Container for loading data to ``DB`` as a scheduler Job using ``Chronos`` in `Mesos` Platform or ``Kubernetes Scheduler``
+Analyzing Yellow Taxi Data. This project can be executed using Docker as Container for loading data to ``DB`` as a scheduler Job using ``Chronos`` in `Mesos` Platform or ``Kubernetes Scheduler``
+
+Data Downloading and Loading Process are tracked and managed using table ``tbl_status`` 
+
 
 Requirements
 ------------
 
-Python 3.7+.
+Python 3.7+ and PostgresSql
 
 
 
@@ -58,6 +61,15 @@ Steps:
 - ``docker-compose up -d``
 
 
+Docker
+------
+
+Building Docker and using docker
+
+- ``make build -e VERSION=latest``
+- ``make push -e VERSION=latest``
+- ``docker run -t -i --network host docker.io/krishnabigdata/taxi_data_analysis -v ${PWD}:/taxi_data_analysis/dataset --action download --year 2019 --month 1 --color yellow``
+
 Usage
 ---------
 
@@ -65,8 +77,8 @@ Commands to use the `processing` cli
 
     .. code-block:: bash 
 
-    usage: processing [-h] --year YEAR --month {1,2,3,4,5,6} --color {yellow}
-                  --action
+    usage: processing [-h] [--year YEAR] [--month {1,2,3,4,5,6}]
+                  [--color {yellow}] --action
                   {all,download,load,avg_trip,avg_trip_local,rolling_avg_trip}
                   [--verbose VERBOSE]
 
@@ -83,12 +95,22 @@ Commands to use the `processing` cli
       --verbose VERBOSE     logging action to be performed (default: True)
       
 
-- `all`: Performs all steps ``Downloading``, ``LoadingToDB``
+- `all`: Performs all steps 
+    - ``Downloading``, ``LoadingToDB``, ``Queries DB for AVG and Rolling AVG``
+- ``avg_trip_local``
+    - Calculates Trip Distance Average by Month by Querying the Locally downloaded file.
+- ``avg_trip``
+    - Calculates Trip Distance Average by Month by Querying the DB.
+- ``rolling_avg_trip``
+    - Calculates 45 Day Rolling Trip Distance Average by Querying the DB.
+
 
 Scaling Up
 ---------
 
-We can use the below options for distributed processing in order to process huge volume of data.
+We can use the below options for distributed processing in order to process huge volume of data which cannot be processed by
+single instance.
 
 - ``pyspark`` - For distributed processing
 - ``DB``: Parallel loading of files to DB and analysis using SQL queries.
+- ``Streaming``: Data produced as events to ``Kafka`` and Processing using `Kafa-Connect connectors` or ``Spark Structured Streaming`` or ``Consume from Kafka`` and load to ``DB`` ``->`` SQL Query
